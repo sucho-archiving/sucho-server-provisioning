@@ -6,7 +6,7 @@ droplet_name: browsertrix-1
 user: "SimonWiles"
 
 # Size of the volume to be attached to the droplet (GB)
-volume_size: 100
+volume_size: 600
 
 # The user's SSH public key
 public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPRykcZqP6xxQVsy1pXUFQxnMECNm0fz6ytPlI3Lra2j simon@arch-precision-5550"
