@@ -5,33 +5,35 @@ Terraform scripts for server provisioning
 
 ## Setup
 
-1. Install Terraform locally (<https://www.terraform.io/downloads>) and Ansible locally (<https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html>)
+1. Install Ansible locally (<https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html>)
 
-2. Download the terraform-backend-git from <https://github.com/plumber-cd/terraform-backend-git/releases/tag/v0.0.17> and put it somewhere on your `$PATH`
+2. Create a Digital Ocean Personal Access Token to use as an API key (<https://docs.digitalocean.com/reference/api/create-personal-access-token/>)
 
-3. Create a Digital Ocean Personal Access Token to use as an API key (<https://docs.digitalocean.com/reference/api/create-personal-access-token/>)
+3. Upload an SSH public key to Digital Ocean (<https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-account/>), and copy the fingerprint that's created (`<admin-ssh-key-fingerprint>` below)
 
-4. Upload an SSH public key to Digital Ocean (<https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-account/>), and copy the fingerprint that's created
-
-5. Checkout this repo and `cd` into it
-
-6. `/path/to/terraform-backend-git git terraform init`
+4. Checkout this repo and `cd` into it
 
 
 ## Usage
 
-The current state is determined by the `*.yaml` files in `droplets/`.  Adding a new file there (and running `terraform apply`) creates a new droplet.  Removing a file (and running `terraform apply`) destroys that droplet.
+1. Create a droplet:
 
-1. `export DO_TOKEN=<your-digital-ocean-pat>`
+   ```sh
+   doctl compute droplet create --region fra1 --image ubuntu-20-04-x64 --size s-8vcpu-16gb <droplet-name> --ssh-keys <admin-ssh-key-fingerprint>
+   ```
 
-2. `export SSH_FINGERPRINT=<the-fingerprint-of-your-uploaded-ssh-key>`
+2. Find the IP address of the newly-created droplet (`<do-droplet-id>` below):
 
-3. Copy `droplets/droplet.yaml.example` to a new file, and update the values as appopriate
+   ```sh
+   doctl compute droplet get <droplet-name> --format PublicIPv4
 
-4. `/path/to/terraform-backend-git git terraform apply -var "do_token=${DO_TOKEN}" -var "ssh_fingerprint=${SSH_FINGERPRINT}"`
+   ```
 
-5. To destroy a droplet, remove the `.yaml` file and run the `terraform apply` command above again.  **Don't run** `terraform destroy`!
+3. Run the playbook against the droplet:
 
-6. When files have been added/updated/removed from `droplets/`, the changes should be committed to this repo so that other admins can pull them before making further changes.
-  
-  
+   ```sh
+   ansible-playbook -u root -i '<do-droplet-ip>,' -e "user=<user-to-configure>" -e "pub_key='$(</path-to-ssh-public-key)'" browsertrix.playbook.yaml
+   ```
+
+   You can read the SSH public key from a file, as in the example above, or just provide it as a string.
+
