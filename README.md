@@ -2,10 +2,12 @@
 
 Ansible playbook for provisioning a DigitalOcean droplet for running [webrecorder/browsertrix-crawler](https://github.com/webrecorder/browsertrix-crawler).
 
+The droplet is configured with docker, docker-compose, and the AWS CLI.  The browsertrix docker image is pulled, and an SSH public key is installed for a user who has passwordless sudo on the droplet.
+
 
 ## Setup
 
-1. Install Ansible locally (<https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html>)
+1. Install Ansible (>= 2.12) locally (<https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html>)
 
 2. Create a Digital Ocean Personal Access Token to use as an API key (<https://docs.digitalocean.com/reference/api/create-personal-access-token/>)
 
