@@ -21,7 +21,7 @@ resource "digitalocean_volume" "browsertrix" {
   name                    = "${each.value.droplet_name}-volume"
   size                    = each.value.volume_size
   initial_filesystem_type = "ext4"
-  description             = "an example volume"
+  tags                    = []
 }
 
 resource "digitalocean_droplet" "browsertrix" {
@@ -44,7 +44,6 @@ resource "digitalocean_droplet" "browsertrix" {
       host = self.ipv4_address
       type = "ssh"
       user = "root"
-      # private_key = file(var.pvt_key)
     }
   }
 
