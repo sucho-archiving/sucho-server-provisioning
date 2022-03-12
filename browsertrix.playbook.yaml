@@ -94,6 +94,3 @@
       args:
         cmd: "/tmp/aws/install"
         creates: /usr/local/bin/aws
-
-    - name: Mount the external volume for the user
-      shell: mkdir -p /home/{{ user }}/crawls && mount /dev/disk/by-id/scsi-0DO_Volume_{{ volume_name }} /home/{{ user }}/crawls -o uid={{ user }} -o gid={{ user }}
