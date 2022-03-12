@@ -37,6 +37,8 @@ resource "digitalocean_droplet" "browsertrix" {
     var.ssh_fingerprint
   ]
 
+  volume_ids = ["${digitalocean_volume.browsertrix[each.key].id}"]
+
   provisioner "remote-exec" {
     inline = ["apt-mark hold linux-virtual", "apt update", "apt upgrade -y", "echo Done!"]
 
@@ -56,15 +58,10 @@ resource "digitalocean_droplet" "browsertrix" {
       -i '${self.ipv4_address},' \
       -e 'user=${each.value.user}' \
       -e 'pub_key="${each.value.public_key}"' \
+      -e 'volume_name="${lower(each.value.droplet_name)}-volume"' \
       browsertrix.playbook.yaml
     EOT
   }
-}
-
-resource "digitalocean_volume_attachment" "browsertrix" {
-  for_each   = { for o in local.yaml_data : o.droplet_name => o }
-  droplet_id = digitalocean_droplet.browsertrix[each.key].id
-  volume_id  = digitalocean_volume.browsertrix[each.key].id
 }
 
 output "droplet_ip_address" {
