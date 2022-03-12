@@ -36,6 +36,30 @@ resource "digitalocean_droplet" "browsertrix" {
   ssh_keys = [
     var.ssh_fingerprint
   ]
+
+  provisioner "remote-exec" {
+    inline = ["apt update", "apt-mark hold linux-image-amd64", "apt upgrade -y", "echo Done!"]
+
+    connection {
+      host = self.ipv4_address
+      type = "ssh"
+      user = "root"
+      # private_key = file(var.pvt_key)
+    }
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<-EOT
+    ANSIBLE_HOST_KEY_CHECKING=False \
+    ansible-playbook \
+      -u root \
+      -i '${self.ipv4_address},' \
+      -e 'user=${each.value.user}' \
+      -e 'pub_key="${each.value.public_key}"' \
+      browsertrix.playbook.yaml
+    EOT
+  }
 }
 
 resource "digitalocean_volume_attachment" "browsertrix" {
