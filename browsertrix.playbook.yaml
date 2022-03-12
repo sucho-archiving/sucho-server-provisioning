@@ -37,6 +37,13 @@
     - name: Wait for apt to unlock
       shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
 
+    - name: Upgrade apt packages
+      apt:
+        upgrade: safe
+
+    - name: Wait for apt to unlock
+      shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
+
     - name: Install required system packages
       apt: name={{ item }} state=latest update_cache=yes
       loop:
