@@ -38,7 +38,7 @@ resource "digitalocean_droplet" "browsertrix" {
   ]
 
   provisioner "remote-exec" {
-    inline = ["apt update", "apt-mark hold linux-image-amd64", "apt upgrade -y", "echo Done!"]
+    inline = ["apt-mark hold linux-virtual", "apt update", "apt upgrade -y", "echo Done!"]
 
     connection {
       host = self.ipv4_address
