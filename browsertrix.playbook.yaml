@@ -6,6 +6,7 @@
     - role: docker
     - role: aws-cli
     - role: user
+    - role: tmux-conky
 
   tasks:
     - name: Pull the browsertrix Docker image

@@ -1,0 +1,61 @@
+- name: Install required system packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+    lock_timeout: 120
+  loop:
+    [
+      "conky-cli",
+      "tmux",
+    ]
+
+- name: Create ~/.conkyrc
+  copy:
+    dest: /home/{{ user }}/.conkyrc
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    content: |
+      out_to_console yes
+      override_utf8_locale no
+      total_run_times 0
+      update_interval 1
+      cpu_avg_samples 2
+      short_units yes
+      pad_percents 2
+      TEXT
+      $loadavg | eth0: ${upspeed eth0}/${downspeed eth0} | Up: $uptime_short | CPU: $cpu% | RAM: $memperc% | FS: -${fs_free /}
+
+- name: Create ~/.tmux.conf
+  copy:
+    dest: /home/{{ user }}/.tmux.conf
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    content: |
+      set -g status-interval 0
+      set -g status-justify left
+      set -g status-position bottom
+
+      set -g status-left-length 100
+      set -g status-left "[ #H ][ "
+
+      set -g status-right-length 100
+      set -g status-right " ][ #(conky --config=$HOME/.conkyrc) ]"
+
+      set -g status-style bg=white,fg=blue
+      set -g window-status-current-style bg=blue,fg=white,bold
+      set -g window-status-current-format ' #I#F '
+
+- name: Write tmux stanza to ~/.bashrc
+  blockinfile:
+    dest: /home/{{ user }}/.bashrc
+    block: |-
+      if [ -z "$STY" ]
+      then
+          if [ -x /usr/bin/tmux ]
+          then
+              [ -z "$TMUX"  ] && {
+                  read -p "Press <ENTER> to continue to tmux" enterkey
+                  tmux new-session -A -s main && exit
+              }
+          fi
+      fi
