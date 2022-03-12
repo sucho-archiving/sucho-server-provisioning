@@ -1,103 +1,14 @@
 - become: yes
   hosts: all
   name: browsertrix-provision
+  roles:
+    - role: upgrade
+    - role: docker
+    - role: aws-cli
+    - role: user
+
   tasks:
-    - name: Create the "docker" group
-      group:
-        name: docker
-        state: present
-
-    - name: Create the user
-      user:
-        name: "{{ user }}"
-        state: present
-        shell: "/usr/bin/bash"
-        groups: [sudo, docker]
-
-    - name: Allow passwordless sudo
-      lineinfile:
-        path: /etc/sudoers
-        state: present
-        regexp: "^%sudo"
-        line: "%sudo ALL=(ALL) NOPASSWD: ALL"
-        validate: "visudo -cf %s"
-
-    - name: Add SSH public key
-      authorized_key:
-        user: "{{ user }}"
-        state: present
-        key: "{{ pub_key }}"
-
-    - name: Wait for apt to unlock
-      shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
-
-    - name: Install aptitude using apt # this is preferred by ansible
-      apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
-
-    - name: Wait for apt to unlock
-      shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
-
-    - name: Upgrade apt packages
-      apt:
-        upgrade: safe
-
-    - name: Wait for apt to unlock
-      shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
-
-    - name: Install required system packages
-      apt: name={{ item }} state=latest update_cache=yes
-      loop:
-        [
-          "apt-transport-https",
-          "ca-certificates",
-          "python3-pip",
-          "python3-setuptools",
-          "software-properties-common",
-          "unzip",
-        ]
-
-    - name: Fetch and add the Docker GPG apt key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add Docker Repository
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
-        state: present
-
-    - name: Wait for apt to unlock
-      shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
-
-    - name: Update apt cache and install docker-ce
-      apt: update_cache=yes name=docker-ce state=latest
-
-    - name: Install Docker Module for Python
-      pip:
-        name: docker
-
-    - name: Install docker-compose
-      get_url:
-        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
-        dest: /usr/local/bin/docker-compose
-        group: docker
-        mode: 0750
-
     - name: Pull the browsertrix Docker image
       docker_image:
         name: webrecorder/browsertrix-crawler
         source: pull
-
-    - name: Download awscliv2 installer.
-      unarchive:
-        src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-        dest: "/tmp"
-        remote_src: true
-        creates: "/tmp/aws"
-        mode: 0755
-
-    - name: Run the installer.
-      command:
-      args:
-        cmd: "/tmp/aws/install"
-        creates: /usr/local/bin/aws

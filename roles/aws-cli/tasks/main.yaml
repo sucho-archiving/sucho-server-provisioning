@@ -1,0 +1,13 @@
+- name: Download awscliv2 installer
+  unarchive:
+    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp
+    remote_src: true
+    creates: /tmp/aws
+    mode: 0755
+
+- name: Run the installer
+  command:
+  args:
+    cmd: /tmp/aws/install
+    creates: /usr/local/bin/aws
