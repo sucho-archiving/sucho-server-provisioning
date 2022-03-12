@@ -1,3 +1,12 @@
-droplet_name: droplet-1 # a unique name for the droplet in the DO dashboard
-user: simon # A reference to the user the droplet is spun-up for (slack handle?)
-public_key: <blah> # TODO: read the user's public SSH key from here
+# a unique name for the droplet in the DO dashboard
+droplet_name: browsertrix-1
+
+# A reference to the user the droplet is spun-up for (slack handle?)
+#  (note: tags must match /^[a-z0-9:-_]{1,255}$/)
+user: "SimonWiles"
+
+# Size of the volume to be attached to the droplet (GB)
+volume_size: 100
+
+# TODO: read the user's public SSH key from here
+public_key: <blah>
