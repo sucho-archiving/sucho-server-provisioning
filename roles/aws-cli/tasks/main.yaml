@@ -1,3 +1,9 @@
+- name: Install unzip (required for unarchive handler)
+  apt:
+    name: unzip
+    state: latest
+    lock_timeout: 120
+
 - name: Download awscliv2 installer
   unarchive:
     src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip

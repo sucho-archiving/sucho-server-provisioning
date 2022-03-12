@@ -3,11 +3,11 @@
     name: docker
     state: present
 
-- name: Wait for apt to unlock
-  shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
-
 - name: Install required system packages
-  apt: name={{ item }} state=latest update_cache=yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+    lock_timeout: 120
   loop:
     [
       "apt-transport-https",
@@ -15,7 +15,6 @@
       "python3-pip",
       "python3-setuptools",
       "software-properties-common",
-      "unzip",
     ]
 
 - name: Fetch and add the Docker GPG apt key
@@ -28,11 +27,11 @@
     repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
     state: present
 
-- name: Wait for apt to unlock
-  shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
-
 - name: Update apt cache and install docker-ce
-  apt: update_cache=yes name=docker-ce state=latest
+  apt:
+    name: docker-ce
+    state: latest
+    lock_timeout: 120
 
 - name: Install Docker Module for Python
   pip:
