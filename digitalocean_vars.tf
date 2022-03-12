@@ -8,15 +8,15 @@ variable "ssh_fingerprint" {
 
 variable "droplet_image" {
   description = "Image identifier for the OS in DigitalOcean"
-  default     = "debian-11-x64"
+  default     = "ubuntu-20-04-x64"
 }
 
 variable "droplet_region" {
   description = "Region identifier where the droplet will be created"
-  default     = "sfo3"
+  default     = "fra1"
 }
 
 variable "droplet_size" {
   description = "Droplet size identifier"
-  default     = "s-1vcpu-1gb"
+  default     = "s-8vcpu-16gb"
 }
