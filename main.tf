@@ -18,7 +18,7 @@ locals {
 resource "digitalocean_volume" "browsertrix" {
   for_each                = { for o in local.yaml_data : o.droplet_name => o }
   region                  = var.droplet_region
-  name                    = "${each.value.droplet_name}-volume"
+  name                    = "${lower(each.value.droplet_name)}-volume"
   size                    = each.value.volume_size
   initial_filesystem_type = "ext4"
   tags                    = []
