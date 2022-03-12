@@ -1,6 +1,6 @@
 # sucho-server-provisioning
 
-Terraform scripts for server provisioning
+Ansible playbook for provisioning a DigitalOcean droplet for running [webrecorder/browsertrix-crawler](https://github.com/webrecorder/browsertrix-crawler).
 
 
 ## Setup
